@@ -1,5 +1,5 @@
 # dependencies
-/node_modules
+/app/node_modules
 
 # IDE
 /.idea
@@ -7,17 +7,18 @@
 /.vscode
 
 # misc
-npm-debug.log
+/app/npm-debug.log
 
 # example
-/quick-start
+/app/quick-start
 
 # tests
-/test
-/coverage
-/.nyc_output
+/app/test
+/app/coverage
+/app/.nyc_output
 
 # dist
-/dist
+/app/dist
 
-bun.lockb
+/app/bun.lockb
+/app/prisma/migrations
