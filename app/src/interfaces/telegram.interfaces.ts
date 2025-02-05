@@ -1,7 +1,7 @@
 export interface ITelegramInitData {
-    user: ITelegramUser | null;
-    authDate: string | null;
-    queryId: string | null;
+    user: ITelegramUser;
+    authDate: string;
+    queryId: string;
 }
 
 export interface ITelegramUser {

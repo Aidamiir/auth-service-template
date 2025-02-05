@@ -9,13 +9,13 @@ import { MESSAGES } from '@/constants/messages';
  * @returns Объект, содержащий поля `data`, `isSuccess` и `message`.
  */
 
-interface Options {
+interface ActionResult {
     data?: unknown;
     isSuccess?: boolean;
     message?: string;
 }
 
-export function createResponseBody({ data = null, isSuccess = true, message = MESSAGES.COMMON.SUCCESS }: Options = {}) {
+export function createResponseBody({ data = null, isSuccess = true, message = MESSAGES.COMMON.SUCCESS }: ActionResult = {}) {
     return {
         data,
         isSuccess,

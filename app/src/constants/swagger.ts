@@ -4,8 +4,11 @@ import { createResponseExample } from '@/helpers/create-response-example';
 import { MESSAGES } from '@/constants/messages';
 import { API_MAP } from '@/constants/api-map';
 
-const { AUTH, USER, COMMON } = MESSAGES;
+const { AUTH, COMMON } = MESSAGES;
 
+/**
+ * Конфигурация Swagger-документации для API.
+ */
 export const SWAGGER = {
     URL: `${API_MAP.PREFIX}/${API_MAP.DOCS}`,
 
@@ -21,13 +24,6 @@ export const SWAGGER = {
                 data: { id: 1, email: 'example@example.com' },
                 message: AUTH.REGISTER.SUCCESS,
             })),
-            EMAIL_CONFIRMATION: createResponseExample(HttpStatus.ACCEPTED, AUTH.REGISTER.EMAIL_CONFIRMATION, createResponseBody({
-                message: AUTH.REGISTER.EMAIL_CONFIRMATION,
-            })),
-            CONFLICT: createResponseExample(HttpStatus.CONFLICT, AUTH.REGISTER.CONFLICT, createResponseBody({
-                isSuccess: false,
-                message: AUTH.REGISTER.CONFLICT,
-            })),
         },
         LOGIN: {
             OPERATION: { summary: 'Вход в аккаунт' },
@@ -38,10 +34,6 @@ export const SWAGGER = {
             SUCCESS: createResponseExample(HttpStatus.OK, AUTH.LOGIN.SUCCESS, createResponseBody({
                 data: { token: 'example-token' },
                 message: AUTH.LOGIN.SUCCESS,
-            })),
-            NOT_FOUND: createResponseExample(HttpStatus.NOT_FOUND,  USER.NOT_FOUND, createResponseBody({
-                isSuccess: false,
-                message:  USER.NOT_FOUND,
             })),
         },
         TELEGRAM_LOGIN: {
@@ -54,11 +46,26 @@ export const SWAGGER = {
                 data: { token: 'example-token' },
                 message: AUTH.LOGIN.SUCCESS,
             })),
-            NOT_FOUND: createResponseExample(HttpStatus.NOT_FOUND, USER.NOT_FOUND, createResponseBody({
-                isSuccess: false,
-                message: USER.NOT_FOUND,
+        },
+        LOGOUT: {
+            OPERATION: { summary: 'Выход из текущей сессии' },
+            SUCCESS: createResponseExample(HttpStatus.OK, AUTH.LOGOUT.SUCCESS, createResponseBody({
+                message: AUTH.LOGOUT.SUCCESS,
             })),
-        }
+        },
+        LOGOUT_ALL: {
+            OPERATION: { summary: 'Выход из всех активных сессий' },
+            SUCCESS: createResponseExample(HttpStatus.OK, AUTH.LOGOUT_ALL.SUCCESS, createResponseBody({
+                message: AUTH.LOGOUT_ALL.SUCCESS,
+            })),
+        },
+        REFRESH: {
+            OPERATION: { summary: 'Обновление access-токена с помощью refresh-токена' },
+            SUCCESS: createResponseExample(HttpStatus.OK, AUTH.REFRESH.SUCCESS, createResponseBody({
+                data: { accessToken: 'new-access-token' },
+                message: AUTH.REFRESH.SUCCESS,
+            })),
+        },
     },
     COMMON: {
         BAD_REQUEST: createResponseExample(HttpStatus.BAD_REQUEST, COMMON.BAD_REQUEST, createResponseBody({

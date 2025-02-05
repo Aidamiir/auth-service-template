@@ -1,3 +1,7 @@
+/**
+ * Карта сообщений для API.
+ * Используется для централизованного управления текстами ответов.
+ */
 export const MESSAGES = {
     APP: {
         START: 'Application is running on',
@@ -13,6 +17,17 @@ export const MESSAGES = {
             SUCCESS: 'Вход выполнен успешно',
             TELEGRAM_VALIDATE_DATA_ERROR: 'Произошла ошибка при проверке данных от телеграм',
         },
+        LOGOUT: {
+            SUCCESS: 'Успешный выход из сессии'
+        },
+        LOGOUT_ALL: {
+            SUCCESS: 'Успешный выход из активных сессий'
+        },
+        REFRESH: {
+            SUCCESS: 'Успешное обновление токена'
+        },
+        NO_ACTIVE_SESSIONS: 'Нет активных сессий',
+        INVALID_REFRESH_TOKEN: 'Токен обновления отсутствует или поврежден',
     },
     USER: {
         NOT_FOUND: 'Пользователь не найден',

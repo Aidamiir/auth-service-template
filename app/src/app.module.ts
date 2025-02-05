@@ -13,6 +13,8 @@ import { ENV } from '@/constants/env';
             validationSchema: Joi.object({
                 PORT: Joi.number().required(),
                 CORS_ORIGIN: Joi.string().required(),
+                TELEGRAM_BOT_TOKEN : Joi.string().required(),
+                JWT_SECRET : Joi.string().required(),
             }),
         }),
         PrismaModule,

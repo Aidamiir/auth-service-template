@@ -1,9 +1,9 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
-import type { ITelegramUser } from '@/interfaces/telegram.interfaces';
-import { ENV } from '@/constants/env';
+import type { ITelegramInitData, ITelegramUser } from '@/interfaces/telegram.interfaces';
 import { MESSAGES } from '@/constants/messages';
+import { ENV } from '@/constants/env';
 
 @Injectable()
 export class TelegramService {
@@ -14,9 +14,9 @@ export class TelegramService {
     }
 
     /**
-     * Проверяет хеш initData, чтобы убедиться в его подлинности и что данные не были подделаны.
-     * @param initData - Строка initData, полученная от Telegram WebApp
-     * @returns {boolean} - Возвращает true, если данные валидны, иначе false
+     * Проверяет хеш `initData`, чтобы убедиться в его подлинности и отсутствии изменений.
+     * @param {string} initData - Данные, полученные от Telegram WebApp
+     * @returns {boolean} - `true`, если данные валидны, иначе `false`
      */
     public verifyInitData(initData: string): boolean {
         const params = new URLSearchParams(initData);
@@ -43,11 +43,12 @@ export class TelegramService {
     }
 
     /**
-     * Извлекает данные мини-приложения (mini-app-data) и дополнительные параметры из initData после валидации.
-     * @param initData - Строка initData, полученная от Telegram WebApp
-     * @returns {object | null} - Объект с разобранными данными, если валидация прошла успешно, или null в противном случае
+     * Извлекает данные из `initData`, проверяя их подлинность.
+     * @param {string} initData - Данные, полученные от Telegram WebApp
+     * @returns {{ user: ITelegramUser, authDate: string, queryId: string }} - Объект с извлечёнными данными
+     * @throws {BadRequestException} - Если данные некорректны или не прошли проверку
      */
-    public extractInitData(initData: string) {
+    public extractInitData(initData: string): ITelegramInitData {
         const isValid = this.verifyInitData(initData);
         if (!isValid) {
             throw new BadRequestException(MESSAGES.AUTH.LOGIN.TELEGRAM_VALIDATE_DATA_ERROR);
@@ -64,10 +65,6 @@ export class TelegramService {
             throw new BadRequestException(MESSAGES.AUTH.LOGIN.TELEGRAM_VALIDATE_DATA_ERROR);
         }
 
-        return {
-            user,
-            authDate,
-            queryId,
-        };
+        return { user, authDate, queryId };
     }
 }

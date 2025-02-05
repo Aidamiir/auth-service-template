@@ -1,9 +1,12 @@
 import { type NestFastifyApplication } from '@nestjs/platform-fastify';
 import { ConfigService } from '@nestjs/config';
-import { HEADERS } from '@/constants/headers';
-import { METHODS } from '@/constants/methods';
 import { ENV } from '@/constants/env';
 
+/**
+ * Конфигурирует CORS (Cross-Origin Resource Sharing) для Fastify.
+ * @param {NestFastifyApplication} app - Экземпляр Nest.js Fastify-приложения
+ * @param {ConfigService} configService - Сервис конфигурации для получения переменных окружения
+ */
 export const configureCors = (app: NestFastifyApplication, configService: ConfigService) => {
     const corsOrigin = configService.get<string>(ENV.CORS_ORIGIN)!;
     const formattedCorsOrigins = corsOrigin
@@ -13,7 +16,7 @@ export const configureCors = (app: NestFastifyApplication, configService: Config
     app.enableCors({
         origin: formattedCorsOrigins,
         credentials: true,
-        allowedHeaders: [HEADERS.AUTHORIZATION, HEADERS.CONTENT_TYPE],
-        methods: [METHODS.POST, METHODS.OPTIONS]
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        methods: ['POST', 'OPTIONS'],
     });
 }

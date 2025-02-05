@@ -6,8 +6,5 @@ export function RegisterSwaggerDecorator() {
     return applyDecorators(
         ApiOperation({ ...SWAGGER.AUTH.REGISTER.OPERATION }),
         ApiResponse({ ...SWAGGER.AUTH.REGISTER.SUCCESS }),
-        ApiResponse({ ...SWAGGER.AUTH.REGISTER.CONFLICT }),
-        ApiResponse({ ...SWAGGER.COMMON.BAD_REQUEST }),
-        ApiResponse({ ...SWAGGER.COMMON.INTERNAL_SERVER }),
     );
 }

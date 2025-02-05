@@ -5,7 +5,12 @@ import { createResponseBody } from '@/helpers/create-response-body';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-    catch(exception: unknown, host: ArgumentsHost) {
+    /**
+     * Обрабатывает все необработанные исключения в приложении.
+     * @param {unknown} exception - Исключение, возникшее в процессе выполнения
+     * @param {ArgumentsHost} host - Контекст запроса
+     */
+    public catch(exception: unknown, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const reply = ctx.getResponse<FastifyReply>();
 
