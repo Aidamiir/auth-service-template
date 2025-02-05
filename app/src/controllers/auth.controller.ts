@@ -1,21 +1,23 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+
 import type { Request, Response } from 'express';
-import { AuthService } from '@/services/auth.service';
-import { TelegramLoginSwaggerDecorator } from '@/decorators/telegram-login-swagger.decorator';
-import { RefreshTokensSwaggerDecorator } from '@/decorators/refresh-tokens.swagger.decorator';
-import { LogoutAllSwaggerDecorator } from '@/decorators/logout-all-swagger.decorator';
-import { RegisterSwaggerDecorator } from '@/decorators/register-swagger.decorator';
-import { LogoutSwaggerDecorator } from '@/decorators/logout-swagger.decorator';
-import { LoginSwaggerDecorator } from '@/decorators/login-swagger.decorator';
-import { AuthDecorator } from '@/decorators/auth.decorator';
-import { createResponseBody } from '@/helpers/create-response-body';
-import { TelegramLoginDto } from '@/dto/telegram-login.dto';
-import { RegisterDto } from '@/dto/register.dto';
-import { LoginDto } from '@/dto/login.dto';
-import { SWAGGER } from '@/constants/swagger';
+
 import { API_MAP } from '@/constants/api-map';
 import { MESSAGES } from '@/constants/messages';
+import { SWAGGER } from '@/constants/swagger';
+import { AuthDecorator } from '@/decorators/auth.decorator';
+import { LoginSwaggerDecorator } from '@/decorators/login-swagger.decorator';
+import { LogoutAllSwaggerDecorator } from '@/decorators/logout-all-swagger.decorator';
+import { LogoutSwaggerDecorator } from '@/decorators/logout-swagger.decorator';
+import { RefreshTokensSwaggerDecorator } from '@/decorators/refresh-tokens.swagger.decorator';
+import { RegisterSwaggerDecorator } from '@/decorators/register-swagger.decorator';
+import { TelegramLoginSwaggerDecorator } from '@/decorators/telegram-login-swagger.decorator';
+import { LoginDto } from '@/dto/login.dto';
+import { RegisterDto } from '@/dto/register.dto';
+import { TelegramLoginDto } from '@/dto/telegram-login.dto';
+import { createResponseBody } from '@/helpers/create-response-body';
+import { AuthService } from '@/services/auth.service';
 
 @ApiTags(SWAGGER.AUTH.TAG)
 @Controller()
@@ -27,7 +29,7 @@ export class AuthController {
      */
     @RegisterSwaggerDecorator()
     @Post(API_MAP.REGISTER)
-    public async register(@Body() dto: RegisterDto): Promise<object> {
+    public register(@Body() dto: RegisterDto) {
         return createResponseBody({ data: dto });
     }
 
@@ -37,7 +39,7 @@ export class AuthController {
     @LoginSwaggerDecorator()
     @HttpCode(HttpStatus.OK)
     @Post(API_MAP.LOGIN)
-    public async login(@Body() dto: LoginDto) {
+    public login(@Body() dto: LoginDto) {
         return createResponseBody({ data: dto });
     }
 
@@ -47,7 +49,11 @@ export class AuthController {
     @TelegramLoginSwaggerDecorator()
     @HttpCode(HttpStatus.OK)
     @Post(API_MAP.TELEGRAM_LOGIN)
-    public async telegramLogin(@Body() dto: TelegramLoginDto, @Res() res: Response, @Req() req: Request) {
+    public async telegramLogin(
+        @Body() dto: TelegramLoginDto,
+        @Res() res: Response,
+        @Req() req: Request,
+    ) {
         const data = await this.authService.loginWithTelegram(dto.initData, res, req);
         return createResponseBody({ data, message: MESSAGES.AUTH.LOGIN.SUCCESS });
     }

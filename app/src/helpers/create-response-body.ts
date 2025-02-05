@@ -15,7 +15,11 @@ interface ActionResult {
     message?: string;
 }
 
-export function createResponseBody({ data = null, isSuccess = true, message = MESSAGES.COMMON.SUCCESS }: ActionResult = {}) {
+export function createResponseBody({
+    data = null,
+    isSuccess = true,
+    message = MESSAGES.COMMON.SUCCESS,
+}: ActionResult = {}) {
     return {
         data,
         isSuccess,

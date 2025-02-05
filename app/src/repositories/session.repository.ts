@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import type { Session } from '@prisma/client';
+
 import type { ICreateSession, IUpdateSession } from '@/interfaces/session.interfaces';
+import type { Session } from '@prisma/client';
+
 import { PrismaService } from '@/services/prisma.service';
 
 @Injectable()
@@ -41,7 +43,10 @@ export class SessionRepository {
      * @param {number} userId - ID пользователя
      * @returns {Promise<number>} - Количество удалённых сессий
      */
-    public async deleteSessionByTokenAndUserId(refreshToken: string, userId: number): Promise<number> {
+    public async deleteSessionByTokenAndUserId(
+        refreshToken: string,
+        userId: number,
+    ): Promise<number> {
         const result = await this.prisma.session.deleteMany({ where: { refreshToken, userId } });
         return result.count;
     }

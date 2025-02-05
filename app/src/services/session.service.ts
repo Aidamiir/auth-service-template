@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { SessionRepository } from '@/repositories/session.repository';
-import type { Session } from '@prisma/client';
+
 import type { ICreateSession, IUpdateSession } from '@/interfaces/session.interfaces';
+import type { Session } from '@prisma/client';
+
+import { SessionRepository } from '@/repositories/session.repository';
 
 @Injectable()
 export class SessionService {

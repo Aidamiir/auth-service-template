@@ -1,5 +1,12 @@
-import { type ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import {
+    type ArgumentsHost,
+    Catch,
+    ExceptionFilter,
+    HttpException,
+    HttpStatus,
+} from '@nestjs/common';
 import { type FastifyReply } from 'fastify';
+
 import { MESSAGES } from '@/constants/messages';
 import { createResponseBody } from '@/helpers/create-response-body';
 
@@ -23,14 +30,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
             const errorResponse = exception.getResponse();
             if (typeof errorResponse === 'string') {
                 message = errorResponse;
-            }
-            else if (errorResponse && typeof errorResponse === 'object') {
+            } else if (errorResponse && typeof errorResponse === 'object') {
                 const { message: msg } = errorResponse as Record<string, any>;
 
                 if (Array.isArray(msg)) {
                     message = msg.join(', ');
-                }
-                else {
+                } else {
                     message = msg || message;
                 }
             }
@@ -42,8 +47,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
             message,
         });
 
-        reply
-            .status(statusCode)
-            .send(responseBody);
+        reply.status(statusCode).send(responseBody);
     }
 }

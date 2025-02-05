@@ -1,12 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import type { Response, Request } from 'express';
-import type { ITokenPayload } from '@/interfaces/token-payload.interface';
+
 import type { IGenerateTokens } from '@/interfaces/generate-tokens.interface';
-import { UserService } from '@/services/user.service';
-import { TelegramService } from '@/services/telegram.service';
-import { SessionService } from '@/services/session.service';
+import type { ITokenPayload } from '@/interfaces/token-payload.interface';
+import type { Response, Request } from 'express';
+
 import { MESSAGES } from '@/constants/messages';
+import { SessionService } from '@/services/session.service';
+import { TelegramService } from '@/services/telegram.service';
+import { UserService } from '@/services/user.service';
 
 @Injectable()
 export class AuthService {
@@ -59,20 +61,28 @@ export class AuthService {
      * @param {Request} req - Объект запроса Express
      * @returns {Promise<{ accessToken: string }>} - Объект с access-токеном
      */
-    public async loginWithTelegram(initData: string, res: Response, req: Request): Promise<{ accessToken: string; }> {
+    public async loginWithTelegram(
+        initData: string,
+        res: Response,
+        req: Request,
+    ): Promise<{ accessToken: string }> {
         const { user: tgData } = this.telegramService.extractInitData(initData);
         const user = await this.userService.getUserByTelegramId(tgData.id);
         const tokens = this.generateTokens({ userId: user.id, telegramId: user.telegramId });
-        const cookieRefreshToken = req.cookies[this.REFRESH_TOKEN_KEY];
+        const cookieRefreshToken: string | null = req.cookies[this.REFRESH_TOKEN_KEY];
 
         if (cookieRefreshToken) {
             const sessions = await this.sessionService.getSessionsByUserId(user.id);
-            const currentSession = sessions.find((session) => session.refreshToken === cookieRefreshToken);
+            const currentSession = sessions.find(
+                (session) => session.refreshToken === cookieRefreshToken,
+            );
 
             if (currentSession) {
                 await this.sessionService.updateSession(currentSession.id, {
                     refreshToken: tokens.refreshToken,
-                    expiresAt: new Date(Date.now() + this.REFRESH_TOKEN_EXPIRES_DAYS * 24 * 60 * 60 * 1000),
+                    expiresAt: new Date(
+                        Date.now() + this.REFRESH_TOKEN_EXPIRES_DAYS * 24 * 60 * 60 * 1000,
+                    ),
                 });
                 this.setRefreshTokenInCookie(tokens.refreshToken, res);
                 return { accessToken: tokens.accessToken };
@@ -98,8 +108,8 @@ export class AuthService {
      * @returns {Promise<{ accessToken: string }>} - Новый access-токен
      * @throws {UnauthorizedException} - Если refresh-токен отсутствует или недействителен
      */
-    public async refreshTokens(req: Request, res: Response): Promise<{ accessToken: string; }> {
-        const refreshToken = req.cookies[this.REFRESH_TOKEN_KEY];
+    public async refreshTokens(req: Request, res: Response): Promise<{ accessToken: string }> {
+        const refreshToken: string | null = req.cookies[this.REFRESH_TOKEN_KEY];
         const user = req.user as ITokenPayload;
         const tokens = this.generateTokens({ userId: user.userId, telegramId: user.telegramId });
 
@@ -131,7 +141,7 @@ export class AuthService {
      */
     public async logout(req: Request, res: Response) {
         const user = req.user as ITokenPayload;
-        const refreshToken = req.cookies[this.REFRESH_TOKEN_KEY];
+        const refreshToken: string | null = req.cookies[this.REFRESH_TOKEN_KEY];
 
         if (!refreshToken) {
             throw new UnauthorizedException(MESSAGES.AUTH.INVALID_REFRESH_TOKEN);

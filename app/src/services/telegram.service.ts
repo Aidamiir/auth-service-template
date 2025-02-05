@@ -1,9 +1,12 @@
+import * as crypto from 'crypto';
+
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as crypto from 'crypto';
+
 import type { ITelegramInitData, ITelegramUser } from '@/interfaces/telegram.interfaces';
-import { MESSAGES } from '@/constants/messages';
+
 import { ENV } from '@/constants/env';
+import { MESSAGES } from '@/constants/messages';
 
 @Injectable()
 export class TelegramService {
@@ -29,10 +32,7 @@ export class TelegramService {
             .sort()
             .join('\n');
 
-        const secretKey = crypto
-            .createHash('sha256')
-            .update(this.botToken)
-            .digest();
+        const secretKey = crypto.createHash('sha256').update(this.botToken).digest();
 
         const calculatedHash = crypto
             .createHmac('sha256', secretKey)
