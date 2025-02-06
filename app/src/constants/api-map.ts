@@ -8,7 +8,10 @@ export const API_MAP = {
 
     LOGIN: 'login',
     REGISTER: 'register',
-    TELEGRAM_LOGIN: 'telegram/login',
+    TELEGRAM: {
+        LOGIN: 'telegram/login',
+        REGISTER: 'telegram/register',
+    },
     REFRESH_TOKENS: 'refresh-tokens',
     LOGOUT: 'logout',
     LOGOUT_ALL: 'logout-all',

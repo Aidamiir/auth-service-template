@@ -8,6 +8,8 @@ import { SWAGGER } from '@/constants/swagger';
  * @param {NestFastifyApplication} app - Экземпляр Nest.js Fastify-приложения
  */
 export const configureSwagger = (app: NestFastifyApplication) => {
+    if (process.env.NODE_ENV === 'production') return;
+
     const config = new DocumentBuilder()
         .setTitle('Auth Service API')
         .setDescription('API сервис авторизации')

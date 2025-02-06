@@ -10,6 +10,8 @@ import { ENV } from '@/constants/env';
  * @param {ConfigService} configService - Сервис конфигурации для получения переменных окружения
  */
 export const configureCors = (app: NestFastifyApplication, configService: ConfigService) => {
+    if (process.env.NODE_ENV === 'development') return;
+
     const corsOrigin = configService.get<string>(ENV.CORS_ORIGIN)!;
     const formattedCorsOrigins = corsOrigin.split(',').map((origin) => origin.trim());
 

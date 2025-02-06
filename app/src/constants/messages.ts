@@ -30,6 +30,7 @@ export const MESSAGES = {
         INVALID_REFRESH_TOKEN: 'Токен обновления отсутствует или поврежден',
     },
     USER: {
+        ALREADY_EXISTS: 'Пользователь уже существует',
         NOT_FOUND: 'Пользователь не найден',
     },
     COMMON: {

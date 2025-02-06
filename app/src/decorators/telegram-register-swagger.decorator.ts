@@ -3,9 +3,9 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 import { SWAGGER } from '@/constants/swagger';
 
-export function TelegramLoginSwaggerDecorator() {
+export function TelegramRegisterSwaggerDecorator() {
     return applyDecorators(
-        ApiOperation({ ...SWAGGER.AUTH.TELEGRAM.LOGIN.OPERATION }),
-        ApiResponse({ ...SWAGGER.AUTH.TELEGRAM.LOGIN.SUCCESS }),
+        ApiOperation({ ...SWAGGER.AUTH.TELEGRAM.REGISTER.OPERATION }),
+        ApiResponse({ ...SWAGGER.AUTH.TELEGRAM.REGISTER.SUCCESS }),
     );
 }

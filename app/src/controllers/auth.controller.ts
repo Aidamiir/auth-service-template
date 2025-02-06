@@ -13,9 +13,11 @@ import { LogoutSwaggerDecorator } from '@/decorators/logout-swagger.decorator';
 import { RefreshTokensSwaggerDecorator } from '@/decorators/refresh-tokens.swagger.decorator';
 import { RegisterSwaggerDecorator } from '@/decorators/register-swagger.decorator';
 import { TelegramLoginSwaggerDecorator } from '@/decorators/telegram-login-swagger.decorator';
+import { TelegramRegisterSwaggerDecorator } from '@/decorators/telegram-register-swagger.decorator';
 import { LoginDto } from '@/dto/login.dto';
 import { RegisterDto } from '@/dto/register.dto';
 import { TelegramLoginDto } from '@/dto/telegram-login.dto';
+import { TelegramRegisterDto } from '@/dto/telegram-register.dto';
 import { createResponseBody } from '@/helpers/create-response-body';
 import { AuthService } from '@/services/auth.service';
 
@@ -44,17 +46,31 @@ export class AuthController {
     }
 
     /**
-     * Авторизация через Telegram WebApp.
+     * Логин через Telegram WebApp.
      */
     @TelegramLoginSwaggerDecorator()
     @HttpCode(HttpStatus.OK)
-    @Post(API_MAP.TELEGRAM_LOGIN)
+    @Post(API_MAP.TELEGRAM.LOGIN)
     public async telegramLogin(
         @Body() dto: TelegramLoginDto,
         @Res() res: Response,
         @Req() req: Request,
     ) {
         const data = await this.authService.loginWithTelegram(dto.initData, res, req);
+        return createResponseBody({ data, message: MESSAGES.AUTH.LOGIN.SUCCESS });
+    }
+
+    /**
+     * Регистрация через Telegram WebApp.
+     */
+    @TelegramRegisterSwaggerDecorator()
+    @Post(API_MAP.TELEGRAM.REGISTER)
+    public async telegramRegister(
+        @Body() dto: TelegramRegisterDto,
+        @Res() res: Response,
+        @Req() req: Request,
+    ) {
+        const data = await this.authService.registerWithTelegram(dto.initData, res, req);
         return createResponseBody({ data, message: MESSAGES.AUTH.LOGIN.SUCCESS });
     }
 

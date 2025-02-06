@@ -1,11 +1,17 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+    ConflictException,
+    Injectable,
+    NotFoundException,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
 
-import type { IGenerateTokens } from '@/interfaces/generate-tokens.interface';
-import type { ITokenPayload } from '@/interfaces/token-payload.interface';
+import type { IGenerateTokens, ITokenPayload } from '@/interfaces/token.interfaces';
 import type { Response, Request } from 'express';
 
 import { MESSAGES } from '@/constants/messages';
+import { UserRepository } from '@/repositories/user.repository';
 import { SessionService } from '@/services/session.service';
 import { TelegramService } from '@/services/telegram.service';
 import { UserService } from '@/services/user.service';
@@ -20,6 +26,7 @@ export class AuthService {
         private readonly telegramService: TelegramService,
         private readonly sessionService: SessionService,
         private readonly userService: UserService,
+        private readonly userRepository: UserRepository,
         private readonly jwtService: JwtService,
     ) {}
 
@@ -54,6 +61,47 @@ export class AuthService {
         });
     }
 
+    private async createSession(user: User, tokens: IGenerateTokens, req: Request) {
+        await this.sessionService.createSession({
+            userId: user.id,
+            refreshToken: tokens.refreshToken,
+            ip: req.ip,
+            userAgent: req.headers['user-agent'] || 'Unknown',
+            expiresAt: new Date(Date.now() + this.REFRESH_TOKEN_EXPIRES_DAYS * 24 * 60 * 60 * 1000),
+        });
+    }
+
+    /**
+     * Регистрация через Telegram WebApp.
+     * @param {string} initData - Данные Telegram WebApp
+     * @param {Response} res - Объект ответа Express
+     * @param {Request} req - Объект запроса Express
+     * @returns {Promise<{ accessToken: string }>} - Объект с access-токеном
+     */
+    public async registerWithTelegram(
+        initData: string,
+        res: Response,
+        req: Request,
+    ): Promise<{ accessToken: string }> {
+        const { user: tgData } = this.telegramService.extractInitData(initData);
+        const oldUser = await this.userRepository.getUserByTelegramId(tgData.id);
+        if (oldUser) {
+            throw new ConflictException(MESSAGES.USER.ALREADY_EXISTS);
+        }
+
+        const user = await this.userRepository.createUser({ ...tgData, telegramId: tgData.id });
+
+        if (!user.telegramId) {
+            throw new NotFoundException(MESSAGES.USER.NOT_FOUND);
+        }
+
+        const tokens = this.generateTokens({ userId: user.id });
+        await this.createSession(user, tokens, req);
+        this.setRefreshTokenInCookie(tokens.refreshToken, res);
+
+        return { accessToken: tokens.accessToken };
+    }
+
     /**
      * Логин через Telegram WebApp.
      * @param {string} initData - Данные Telegram WebApp
@@ -68,7 +116,12 @@ export class AuthService {
     ): Promise<{ accessToken: string }> {
         const { user: tgData } = this.telegramService.extractInitData(initData);
         const user = await this.userService.getUserByTelegramId(tgData.id);
-        const tokens = this.generateTokens({ userId: user.id, telegramId: user.telegramId });
+
+        if (!user.telegramId) {
+            throw new NotFoundException(MESSAGES.USER.NOT_FOUND);
+        }
+
+        const tokens = this.generateTokens({ userId: user.id });
         const cookieRefreshToken: string | null = req.cookies[this.REFRESH_TOKEN_KEY];
 
         if (cookieRefreshToken) {
@@ -89,14 +142,7 @@ export class AuthService {
             }
         }
 
-        await this.sessionService.createSession({
-            userId: user.id,
-            refreshToken: tokens.refreshToken,
-            ip: req.ip,
-            userAgent: req.headers['user-agent'] || 'Unknown',
-            expiresAt: new Date(Date.now() + this.REFRESH_TOKEN_EXPIRES_DAYS * 24 * 60 * 60 * 1000),
-        });
-
+        await this.createSession(user, tokens, req);
         this.setRefreshTokenInCookie(tokens.refreshToken, res);
         return { accessToken: tokens.accessToken };
     }
@@ -111,7 +157,7 @@ export class AuthService {
     public async refreshTokens(req: Request, res: Response): Promise<{ accessToken: string }> {
         const refreshToken: string | null = req.cookies[this.REFRESH_TOKEN_KEY];
         const user = req.user as ITokenPayload;
-        const tokens = this.generateTokens({ userId: user.userId, telegramId: user.telegramId });
+        const tokens = this.generateTokens({ userId: user.userId });
 
         if (!refreshToken) {
             throw new UnauthorizedException(MESSAGES.AUTH.INVALID_REFRESH_TOKEN);

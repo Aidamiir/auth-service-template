@@ -45,20 +45,35 @@ export const SWAGGER = {
                 }),
             ),
         },
-        TELEGRAM_LOGIN: {
-            OPERATION: { summary: 'Вход через телеграм' },
-            DTO: {
-                INIT_DATA: { description: 'initData от telegram', example: 'initDataString' },
-                APP_ID: { description: 'id запущенного приложения', example: 'initDataString' },
+        TELEGRAM: {
+            LOGIN: {
+                OPERATION: { summary: 'Вход через телеграм' },
+                DTO: {
+                    INIT_DATA: { description: 'initData от telegram', example: 'initDataString' },
+                },
+                SUCCESS: createResponseExample(
+                    HttpStatus.OK,
+                    AUTH.LOGIN.SUCCESS,
+                    createResponseBody({
+                        data: { token: 'example-token' },
+                        message: AUTH.LOGIN.SUCCESS,
+                    }),
+                ),
             },
-            SUCCESS: createResponseExample(
-                HttpStatus.OK,
-                AUTH.LOGIN.SUCCESS,
-                createResponseBody({
-                    data: { token: 'example-token' },
-                    message: AUTH.LOGIN.SUCCESS,
-                }),
-            ),
+            REGISTER: {
+                OPERATION: { summary: 'Регистрация через телеграм' },
+                DTO: {
+                    INIT_DATA: { description: 'initData от telegram', example: 'initDataString' },
+                },
+                SUCCESS: createResponseExample(
+                    HttpStatus.OK,
+                    AUTH.LOGIN.SUCCESS,
+                    createResponseBody({
+                        data: { token: 'example-token' },
+                        message: AUTH.REGISTER.SUCCESS,
+                    }),
+                ),
+            },
         },
         LOGOUT: {
             OPERATION: { summary: 'Выход из текущей сессии' },

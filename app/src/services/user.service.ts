@@ -23,4 +23,19 @@ export class UserService {
 
         return user;
     }
+
+    /**
+     * Получает пользователя по ID
+     * @param {number} id - ID пользователя
+     * @returns {Promise<User>} - Найденный пользователь
+     * @throws {NotFoundException} - Если пользователь не найден
+     */
+    public async getUserById(id: number): Promise<User> {
+        const user = await this.userRepository.getUserById(id);
+        if (!user) {
+            throw new NotFoundException(MESSAGES.USER.NOT_FOUND);
+        }
+
+        return user;
+    }
 }
